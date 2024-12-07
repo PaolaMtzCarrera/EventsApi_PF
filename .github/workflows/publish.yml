@@ -1,0 +1,28 @@
+name: Docker Build & Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs: 
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+
+      - name: Build Docker Image
+        run: docker build -t paolamartinez2024/711-events-api:${{ github.sha }} .
+
+      - name: Tag Latest
+        run: docker tag paolamartinez2024/711-events-api:${{ github.sha }} paolamartinez2024/711-events-api:latest
+
+      - name: Push Docker Image
+        run: docker push paolamartinez2024/711-events-api:${{ github.sha }}
+
+      - name: Push Latest Tag
+        run: docker push docker push paolamartinez2024/711-events-api:latest
