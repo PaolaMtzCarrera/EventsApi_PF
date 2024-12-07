@@ -25,4 +25,4 @@ jobs:
         run: docker push paolamartinez2024/711-events-api:${{ github.sha }}
 
       - name: Push Latest Tag
-        run: docker push docker push paolamartinez2024/711-events-api:latest
+        run: docker push paolamartinez2024/711-events-api:latest
