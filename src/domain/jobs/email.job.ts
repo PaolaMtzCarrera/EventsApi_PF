@@ -7,49 +7,49 @@ import { generateMonoMapEmailTemplate } from "../template/email.template";
 export const emailJob = (userId: string, eventId: string) => {
     const emailService = new EmailService();
 
-    cron.schedule("*/10 * * * * *", async () => {
+    const job = cron.schedule("*/10 * * * * *", async () => {
         console.log("Cron ejecutado cada 10 segundos");
 
         try {
             const event = await EventModel.findById(eventId);
-            if (!event) {
-                console.log(`Evento con ID: ${eventId} no encontrado`);
-                return;
-            }
-
             const user = await UserModel.findById(userId);
-            if (!user) {
-                console.log(`Usuario con ID: ${userId} no encontrado`);
+
+            if (!event || !user) {
+                console.log("Usuario o evento no encontrado, deteniendo cron.");
+                job.stop(); // Detener el cron si algo falta
                 return;
             }
 
-
-            const userev = await UserModel.find({ isEmailSent: false });
-            if (!userev.length) {
-                console.log("No hay casos pendientes de enviar");
+            if (user.isEmailSent) {
+                console.log("Correo ya fue enviado, deteniendo cron.");
+                job.stop(); // Detener el cron si ya se envió
                 return;
             }
 
-            const randomCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-
-            const htmlBody = generateMonoMapEmailTemplate( 
-                event.lat,          
+            const htmlBody = generateMonoMapEmailTemplate(
+                event.lat,
                 event.lng,
-                event.name,         
-                event.description,  
-                randomCode     
+                event.name,
+                event.description,
+                Math.random().toString(36).substring(2, 10).toUpperCase()
             );
 
             await emailService.sendEmail({
                 to: user.email,
-                subject: `Detalles del Evento: ${event.name}`,
+                subject: `Detalles del Evento: ${event.name}`, 
                 htmlBody,
             });
 
-            console.log(`Correo enviado a ${user.email} con la información del evento ${event.name}`);
+            console.log(`Correo enviado a ${user.email}`); 
 
+            // Actualizar al usuario para marcar como enviado
+            await UserModel.findByIdAndUpdate(userId, { isEmailSent: true });
+
+            // Detener el cron una vez enviado el correo
+            job.stop();
         } catch (error) {
             console.error("Error al enviar el correo desde el job:", error);
+            job.stop(); // Detén el cron también en caso de error
         }
     });
 };
