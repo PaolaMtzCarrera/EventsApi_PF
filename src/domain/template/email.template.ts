@@ -1,6 +1,6 @@
 import { envs } from "../../config/env";
 
-export function generateMonoMapEmailTemplate(name: string, description: string, lat: number, lng: number, code:string): string {
+export function generateMonoMapEmailTemplate( lat: number, lng: number,name: string, description: string, code:string): string {
     const mapImageURL = generateMapboxStaticImageURL(lat,lng);
     return `
    <!DOCTYPE html>
