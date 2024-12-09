@@ -97,9 +97,8 @@ export function generateMonoMapEmailTemplate( lat: number, lng: number,name: str
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <div class="header justify-content-center">
             <h1>Detalles del Evento</h1>
-            <i class="fas fa-calendar-alt"></i> 
         </div>
         <div class="content">
             <p><strong>Nombre:</strong> ${name}</p>
