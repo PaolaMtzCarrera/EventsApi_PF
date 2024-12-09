@@ -36,7 +36,7 @@ export const emailJob = (userId: string, eventId: string) => {
 
             await emailService.sendEmail({
                 to: user.email,
-                subject: `Detalles del Evento: ${event.name}`, 
+                subject: `Hola! fuiste invitado(a) al siguiente evento: ${event.name}`, 
                 htmlBody,
             });
 
